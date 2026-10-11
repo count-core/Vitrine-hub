@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: stamp-hub-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: stamp
+      POSTGRES_PASSWORD: stamp
+      POSTGRES_DB: stamp_hub
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stamp -d stamp_hub"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  db_data:

@@ -1,0 +1,55 @@
+# Coolify: Docker Compose Build Pack. Kein ports/networks, Coolify routet über Traefik.
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SERVICE_FQDN_APP_3000
+      - DATABASE_URL=postgres://${SERVICE_USER_POSTGRES}:${SERVICE_PASSWORD_POSTGRES}@db:5432/stamp_hub
+      - BETTER_AUTH_SECRET=${SERVICE_PASSWORD_64_AUTHSECRET}
+      - BETTER_AUTH_URL=${SERVICE_URL_APP}
+      - ALLOW_SIGNUP=${ALLOW_SIGNUP:-false}
+      - UPLOAD_DIR=/app/data/uploads
+      - RUN_MIGRATIONS=true
+      - MIGRATIONS_DIR=/app/server/db/migrations
+      - AI_PROVIDER=${AI_PROVIDER:-gemini}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-3.6-flash}
+      - GEMINI_FALLBACK_MODELS=${GEMINI_FALLBACK_MODELS:-gemini-3.5-flash-lite,gemini-3.8-flash}
+      - APP_NAME=${APP_NAME:-Vitrine-Hub}
+      - REPO_URL=${REPO_URL:-https://github.com/count-core/Vitrine-hub}
+      - LEGAL_NAME=${LEGAL_NAME}
+      - LEGAL_ADDRESS=${LEGAL_ADDRESS}
+      - LEGAL_EMAIL=${LEGAL_EMAIL}
+      - LEGAL_PHONE=${LEGAL_PHONE}
+      - LEGAL_VAT_ID=${LEGAL_VAT_ID}
+    volumes:
+      - uploads:/app/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_USER=${SERVICE_USER_POSTGRES}
+      - POSTGRES_PASSWORD=${SERVICE_PASSWORD_POSTGRES}
+      - POSTGRES_DB=stamp_hub
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  uploads:
+  pg-data:

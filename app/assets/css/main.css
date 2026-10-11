@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+  --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Schibsted Grotesk', 'Figtree', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+}
+
+:root {
+  --ui-radius: 0.375rem;
+}
+
+.font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Marke mit Zähnung */
+.stamp-edge {
+  padding: 4px;
+  background: #f3f3f0;
+  -webkit-mask: radial-gradient(circle at 0 0, transparent 2.3px, #000 2.7px) 0 0/8px 8px, linear-gradient(#000 0 0) content-box;
+  mask: radial-gradient(circle at 0 0, transparent 2.3px, #000 2.7px) 0 0/8px 8px, linear-gradient(#000 0 0) content-box;
+  -webkit-mask-composite: source-over;
+  mask-composite: add;
+  line-height: 0;
+}

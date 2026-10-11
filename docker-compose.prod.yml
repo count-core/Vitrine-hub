@@ -1,0 +1,38 @@
+# Selbst hosten ohne Coolify: `docker compose -f docker-compose.prod.yml up -d --build`
+# Danach einen Reverse-Proxy (Caddy, Traefik, nginx) mit HTTPS auf Port 3000 legen.
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgres://stamp:${POSTGRES_PASSWORD:-stamp}@db:5432/stamp_hub
+      - UPLOAD_DIR=/app/data/uploads
+      - RUN_MIGRATIONS=true
+      - MIGRATIONS_DIR=/app/server/db/migrations
+    volumes:
+      - uploads:/app/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: stamp
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-stamp}
+      POSTGRES_DB: stamp_hub
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stamp -d stamp_hub"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  uploads:
+  pg-data:

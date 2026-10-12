@@ -15,7 +15,7 @@ Alle nennenswerten Änderungen an Vitrine-Hub. Format nach [Keep a Changelog](ht
 - Rollen werden jetzt bei allen schreibenden Aufrufen serverseitig geprüft. Mitglieder mit „Nur ansehen“ konnten bisher Positionen, Bilder, Alben und Preise ändern oder löschen und die Sichtbarkeit der Sammlung umstellen. Jetzt braucht Ändern das Recht „Bearbeiten“, die Sammlungseinstellungen bleiben dem Eigentümer vorbehalten.
 - Anfragen mit Namen und E-Mail von Interessenten sehen nur noch Mitglieder mit Bearbeiten-Recht.
 - Ein Einladungscode lässt sich auch bei gleichzeitigen Aufrufen nur einmal einlösen.
-- Abhängigkeiten aktualisiert (u. a. Nuxt 4.6, sharp 0.35.5) und verwundbare Unterpakete der Entwicklungswerkzeuge auf gepatchte Versionen gezwungen.
+- Abhängigkeiten aktualisiert (u. a. Nuxt 4.6, sharp 0.35.5) und verwundbare Unterpakete auf gepatchte Versionen gezwungen. Funde ohne Fix oder ohne kompatible Version, die nur in Entwicklungswerkzeugen stecken und nicht im Produktions-Build landen, sind im Audit gezielt ausgenommen.
 
 ### Behoben
 - Unter „Zuletzt erfasst“ auf der Startseite fehlten Album und Blatt, weil die Daten nicht mitgeliefert wurden.

@@ -56,15 +56,17 @@
       "better-sqlite3"
     ],
     "overrides": {
-      "simple-git": ">=4.0.1",
-      "@simple-git/argv-parser": ">=2.0.1",
       "shell-quote": ">=1.11.0",
       "source-map-js": ">=1.2.2"
     },
     "auditConfig": {
       "ignoreGhsas": [
         "GHSA-86w9-cpqp-85rv",
-        "GHSA-vfj7-8cjw-p6xm"
+        "GHSA-vfj7-8cjw-p6xm",
+        "GHSA-v5rq-49vh-5v5c",
+        "GHSA-x6jw-m9v5-85vh",
+        "GHSA-g4wm-2vf7-vfgr",
+        "GHSA-858h-whjf-mvg5"
       ]
     }
   }

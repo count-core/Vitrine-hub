@@ -14,6 +14,6 @@ export default defineEventHandler(async (event) => {
     withoutImage: sql<number>`count(*) filter (where not exists (select 1 from item_image i where i.item_id = item.id))::int`,
   }).from(schema.item).where(where)
   const byArea = await db.select({ area: schema.item.area, n: count() }).from(schema.item).where(where).groupBy(schema.item.area).orderBy(desc(count()))
-  const recent = await db.query.item.findMany({ where, orderBy: desc(schema.item.createdAt), limit: 6, with: { images: { limit: 1, orderBy: (i, { desc }) => [desc(i.isPrimary), i.sort] } } })
+  const recent = await db.query.item.findMany({ where, orderBy: desc(schema.item.createdAt), limit: 6, with: { images: { limit: 1, orderBy: (i, { desc }) => [desc(i.isPrimary), i.sort] }, album: true } })
   return { ...tot, catalogValue: Number(tot?.catalogValue ?? 0), byArea, recent }
 })

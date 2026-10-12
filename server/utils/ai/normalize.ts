@@ -96,11 +96,13 @@ export function normalizeResponse(raw: unknown, now = new Date().getFullYear()):
   })
   // Doppelt erkannte Marken (stark überlappende Rahmen) abwerten
   for (let i = 0; i < out.length; i++) {
-    if (!out[i].box) continue
+    const a = out[i]!
+    if (!a.box) continue
     for (let j = 0; j < i; j++) {
-      if (out[j].box && iou(out[i].box!, out[j].box!) > 0.5) {
-        out[i].hint = [out[i].hint, 'doppelt erkannt'].filter(Boolean).join(' · ')
-        out[i].confidence = Math.min(out[i].confidence, 0.3)
+      const b = out[j]!
+      if (b.box && iou(a.box, b.box) > 0.5) {
+        a.hint = [a.hint, 'doppelt erkannt'].filter(Boolean).join(' · ')
+        a.confidence = Math.min(a.confidence, 0.3)
         break
       }
     }

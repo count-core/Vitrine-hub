@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   const ip = getRequestIP(event, { xForwardedFor: true }) || ''
   const now = Date.now(); const hits = (recent.get(ip) || []).filter(t => now - t < 3600_000)
   if (recent.size > 5000) for (const [k, v] of recent) if (!v.some(t => now - t < 3600_000)) recent.delete(k)
-  const [{ n }] = await db.select({ n: count() }).from(schema.inquiry).where(and(eq(schema.inquiry.collectionId, c.id), gt(schema.inquiry.createdAt, new Date(now - 3600_000))))
+  const [{ n } = { n: 0 }] = await db.select({ n: count() }).from(schema.inquiry).where(and(eq(schema.inquiry.collectionId, c.id), gt(schema.inquiry.createdAt, new Date(now - 3600_000))))
   if (n >= 30) throw createError({ statusCode: 429, statusMessage: 'Zu viele Anfragen für diese Sammlung, bitte später erneut' })
   if (hits.length >= 5) throw createError({ statusCode: 429, statusMessage: 'Zu viele Anfragen, bitte später erneut' })
   recent.set(ip, [...hits, now])

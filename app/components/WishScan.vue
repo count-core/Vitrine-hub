@@ -59,7 +59,7 @@
 <script setup lang="ts">
 const emit = defineEmits<{ added: [] }>()
 const toast = useToast()
-const condItems = CONDITIONS.slice(0, 4).map(c => ({ label: `${c.symbol} ${c.label}`, value: c.value }))
+const condItems = CONDITIONS.slice(0, 4).map(c => ({ label: `${c.symbol} ${c.label}`, value: c.value as string }))
 const modeItems = [{ label: 'Automatisch', value: 'auto' }, { label: 'Briefmarken', value: 'stamps' }, { label: 'Münzen', value: 'coins' }]
 
 const mode = ref('auto'), hint = ref('')

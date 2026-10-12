@@ -25,7 +25,7 @@
         <NuxtLink to="/erfassen" class="flex size-13 items-center justify-center rounded-full bg-orange-500 text-white shadow-lg shadow-orange-500/40" aria-label="Erfassen">
           <UIcon name="i-lucide-camera" class="size-6" />
         </NuxtLink>
-        <NuxtLink v-for="n in [nav[2], nav[nav.length - 1]]" :key="n.to" :to="n.to" class="flex size-12 items-center justify-center rounded-full text-stone-500" :class="isActive(n.to) ? 'bg-stone-900 text-white dark:bg-white dark:text-stone-900' : ''" :aria-label="n.label">
+        <NuxtLink v-for="n in navRight" :key="n.to" :to="n.to" class="flex size-12 items-center justify-center rounded-full text-stone-500" :class="isActive(n.to) ? 'bg-stone-900 text-white dark:bg-white dark:text-stone-900' : ''" :aria-label="n.label">
           <UIcon :name="n.icon" class="size-5" />
         </NuxtLink>
       </div>
@@ -48,6 +48,7 @@ const nav = [
   { to: '/mitglieder', icon: 'i-lucide-users', label: 'Mitglieder' },
   { to: '/einstellungen', icon: 'i-lucide-settings', label: 'Einstellungen' },
 ]
+const navRight = [nav[2]!, nav[nav.length - 1]!]
 const version = useRuntimeConfig().public.version
 const isActive = (to: string) => to === '/' ? route.path === '/' : route.path.startsWith(to)
 async function logout() { await signOut(); clearSessionUser(); await navigateTo('/login') }

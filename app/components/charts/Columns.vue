@@ -11,7 +11,7 @@
         <text v-if="d.value === max" :x="x(i) + slot / 2" :y="y(d.value) - 4" text-anchor="middle" fill="var(--ink)" style="font-size:12px;font-weight:700">{{ d.value }}</text>
       </g>
     </svg>
-    <div v-if="hover >= 0 && data[hover]" class="tip" :style="{ left: ((x(hover) + slot / 2) / W * 100) + '%', top: (y(data[hover].value) / H * 100) + '%' }">{{ data[hover].key }}: {{ data[hover].value }}</div>
+    <div v-if="hd" class="tip" :style="{ left: ((x(hover) + slot / 2) / W * 100) + '%', top: (y(hd.value) / H * 100) + '%' }">{{ hd.key }}: {{ hd.value }}</div>
   </div>
 </template>
 
@@ -26,4 +26,5 @@ const ticks = computed(() => [0, nice.value / 2, nice.value].map(v => Math.round
 const y = (v: number) => H - bottom - (v / nice.value) * (H - top - bottom)
 const x = (i: number) => i * slot.value
 const hover = ref(-1)
+const hd = computed(() => hover.value >= 0 ? props.data[hover.value] : undefined)
 </script>

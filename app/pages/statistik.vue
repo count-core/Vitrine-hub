@@ -7,24 +7,24 @@
     </div>
 
     <div class="grid items-start gap-4 lg:grid-cols-2">
-      <ChartsChartCard title="Positionen je Sammelgebiet" :subtitle="`${s.byArea.length} Gebiete`" :columns="['Gebiet', 'Positionen', 'Marken', 'Katalogwert']" :rows="s.byArea.map(a => [a.key || 'ohne Angabe', a.positions, a.pieces, eur(a.value)])">
-        <ChartsBarsH :data="s.byArea.map(a => ({ key: a.key, value: a.positions, extra: `${a.pieces} Marken` }))" label="Positionen je Sammelgebiet" />
+      <ChartsChartCard title="Positionen je Sammelgebiet" :subtitle="`${s.byArea.length} Gebiete`" :columns="['Gebiet', 'Positionen', 'Marken', 'Katalogwert']" :rows="s.byArea.map((a: any) => [a.key || 'ohne Angabe', a.positions, a.pieces, eur(a.value)])">
+        <ChartsBarsH :data="s.byArea.map((a: any) => ({ key: a.key, value: a.positions, extra: `${a.pieces} Marken` }))" label="Positionen je Sammelgebiet" />
       </ChartsChartCard>
-      <ChartsChartCard title="Katalogwert je Sammelgebiet" subtitle="Summe Katalogwert × Menge, nur Positionen mit Wert" :columns="['Gebiet', 'Katalogwert']" :rows="valueByArea.map(a => [a.key || 'ohne Angabe', eur(a.value)])">
+      <ChartsChartCard title="Katalogwert je Sammelgebiet" subtitle="Summe Katalogwert × Menge, nur Positionen mit Wert" :columns="['Gebiet', 'Katalogwert']" :rows="valueByArea.map((a: any) => [a.key || 'ohne Angabe', eur(a.value)])">
         <ChartsBarsH v-if="valueByArea.length" :data="valueByArea" label="Katalogwert je Gebiet" :fmt="eur" />
         <p v-else class="py-6 text-center text-sm text-stone-500">Noch keine Katalogwerte erfasst. Preise pflegst du auf der Positionsseite.</p>
       </ChartsChartCard>
-      <ChartsChartCard title="Erhaltung" subtitle="Anteil der Positionen" :columns="['Erhaltung', 'Positionen', 'Marken']" :rows="condData.map(c => [c.key, c.value, c.pieces])">
+      <ChartsChartCard title="Erhaltung" subtitle="Anteil der Positionen" :columns="['Erhaltung', 'Positionen', 'Marken']" :rows="condData.map((c: any) => [c.key, c.value, c.pieces])">
         <ChartsDonut :data="condData" label="Erhaltung" unit="Positionen" />
       </ChartsChartCard>
-      <ChartsChartCard title="Ausgabejahr nach Jahrzehnt" :subtitle="s.totals.minYear ? `${s.totals.minYear} bis ${s.totals.maxYear}` : 'noch keine Jahre erfasst'" :columns="['Jahrzehnt', 'Positionen']" :rows="s.byDecade.map(d => [d.key + 'er', d.positions])">
-        <ChartsColumns v-if="s.byDecade.length" :data="s.byDecade.map(d => ({ key: String(d.key), value: d.positions }))" label="Positionen je Jahrzehnt" />
+      <ChartsChartCard title="Ausgabejahr nach Jahrzehnt" :subtitle="s.totals.minYear ? `${s.totals.minYear} bis ${s.totals.maxYear}` : 'noch keine Jahre erfasst'" :columns="['Jahrzehnt', 'Positionen']" :rows="s.byDecade.map((d: any) => [d.key + 'er', d.positions])">
+        <ChartsColumns v-if="s.byDecade.length" :data="s.byDecade.map((d: any) => ({ key: String(d.key), value: d.positions }))" label="Positionen je Jahrzehnt" />
         <p v-else class="py-6 text-center text-sm text-stone-500">Noch keine Jahre erfasst.</p>
       </ChartsChartCard>
-      <ChartsChartCard title="Erfassung der letzten 90 Tage" subtitle="Neue Positionen pro Tag" :columns="['Tag', 'Positionen', 'Marken']" :rows="s.timeline.map(t => [t.day, t.positions, t.pieces])">
-        <ChartsLineArea :data="s.timeline.map(t => ({ key: t.day.slice(5), value: t.positions }))" label="Erfassung pro Tag" />
+      <ChartsChartCard title="Erfassung der letzten 90 Tage" subtitle="Neue Positionen pro Tag" :columns="['Tag', 'Positionen', 'Marken']" :rows="s.timeline.map((t: any) => [t.day, t.positions, t.pieces])">
+        <ChartsLineArea :data="s.timeline.map((t: any) => ({ key: t.day.slice(5), value: t.positions }))" label="Erfassung pro Tag" />
       </ChartsChartCard>
-      <ChartsChartCard title="Status" :columns="['Status', 'Positionen']" :rows="statusData.map(d => [d.key, d.value])">
+      <ChartsChartCard title="Status" :columns="['Status', 'Positionen']" :rows="statusData.map((d: any) => [d.key, d.value])">
         <ChartsDonut :data="statusData" label="Status" unit="Positionen" />
       </ChartsChartCard>
     </div>

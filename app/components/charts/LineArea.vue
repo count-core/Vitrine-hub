@@ -5,15 +5,15 @@
       <text v-for="t in ticks" :key="'t' + t" :x="0" :y="y(t) - 3" style="font-size:11px">{{ t }}</text>
       <path v-if="pts.length" :d="area" fill="var(--s1)" opacity=".1" />
       <path v-if="pts.length" :d="line" fill="none" stroke="var(--s1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
-      <template v-if="hover >= 0 && pts[hover]">
-        <line :x1="pts[hover].x" :x2="pts[hover].x" :y1="top" :y2="H - bottom" stroke="var(--axis)" />
-        <circle :cx="pts[hover].x" :cy="pts[hover].y" r="5" fill="var(--s1)" stroke="var(--surface)" stroke-width="2" />
+      <template v-if="hp">
+        <line :x1="hp.x" :x2="hp.x" :y1="top" :y2="H - bottom" stroke="var(--axis)" />
+        <circle :cx="hp.x" :cy="hp.y" r="5" fill="var(--s1)" stroke="var(--surface)" stroke-width="2" />
       </template>
-      <circle v-else-if="pts.length" :cx="pts[pts.length - 1].x" :cy="pts[pts.length - 1].y" r="4" fill="var(--s1)" stroke="var(--surface)" stroke-width="2" />
+      <circle v-else-if="lastPt" :cx="lastPt.x" :cy="lastPt.y" r="4" fill="var(--s1)" stroke="var(--surface)" stroke-width="2" />
       <text :x="0" :y="H - 4" style="font-size:11px">{{ data[0]?.key }}</text>
       <text v-if="data.length > 1" :x="W" :y="H - 4" text-anchor="end" style="font-size:11px">{{ data[data.length - 1]?.key }}</text>
     </svg>
-    <div v-if="hover >= 0 && data[hover]" class="tip" :style="{ left: (pts[hover].x / W * 100) + '%', top: (pts[hover].y / H * 100) + '%' }">{{ data[hover].key }}: {{ data[hover].value }}</div>
+    <div v-if="hp && hd" class="tip" :style="{ left: (hp.x / W * 100) + '%', top: (hp.y / H * 100) + '%' }">{{ hd.key }}: {{ hd.value }}</div>
     <p v-if="!data.length" class="py-6 text-center text-sm text-stone-500">Noch keine Daten.</p>
   </div>
 </template>
@@ -29,6 +29,9 @@ const pts = computed(() => props.data.map((d, i) => ({ x: props.data.length > 1 
 const line = computed(() => pts.value.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' '))
 const area = computed(() => pts.value.length ? `${line.value} L${pts.value[pts.value.length - 1]!.x} ${y(0)} L${pts.value[0]!.x} ${y(0)} Z` : '')
 const hover = ref(-1)
+const hp = computed(() => hover.value >= 0 ? pts.value[hover.value] : undefined)
+const hd = computed(() => hover.value >= 0 ? props.data[hover.value] : undefined)
+const lastPt = computed(() => pts.value[pts.value.length - 1])
 function onMove(e: MouseEvent | TouchEvent) {
   const el = (e.currentTarget as HTMLElement); const r = el.getBoundingClientRect(); const cx = 'touches' in e ? e.touches[0]!.clientX : e.clientX
   const rel = (cx - r.left) / r.width * W; let best = -1, bd = 1e9

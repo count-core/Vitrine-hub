@@ -89,14 +89,14 @@ const { data: me } = useMe()
 const toast = useToast()
 const prefs = reactive({ album: '1', sheet: '1', condition: 'auto', hint: '', mode: 'auto' })
 const modeItems = [{ label: 'Automatisch', value: 'auto' }, { label: 'Briefmarken', value: 'stamps' }, { label: 'Münzen', value: 'coins' }]
-const typeItems = TYPES.map(t => ({ label: t.label, value: t.value }))
+const typeItems = TYPES.map(t => ({ label: t.label, value: t.value as string }))
 const gradeItems = [{ label: 'Erhaltung?', value: 'none' }, ...GRADES.map(g => ({ label: g, value: g }))]
 onMounted(() => { try { Object.assign(prefs, JSON.parse(localStorage.getItem('erfassen-prefs') || '{}')) } catch {} })
 watch(prefs, p => { try { localStorage.setItem('erfassen-prefs', JSON.stringify(p)) } catch {} }, { deep: true })
-const condDefaults = [{ label: 'KI vermuten lassen', value: 'auto' }, ...CONDITIONS.slice(0, 4).map(c => ({ label: `${c.symbol} ${c.label}`, value: c.value }))]
-const condItems = CONDITIONS.slice(0, 4).map(c => ({ label: `${c.symbol} ${c.label}`, value: c.value }))
+const condDefaults = [{ label: 'KI vermuten lassen', value: 'auto' }, ...CONDITIONS.slice(0, 4).map(c => ({ label: `${c.symbol} ${c.label}`, value: c.value as string }))]
+const condItems = CONDITIONS.slice(0, 4).map(c => ({ label: `${c.symbol} ${c.label}`, value: c.value as string }))
 
-interface Stamp { rotation: number, reverse?: File, reverseUrl?: string, position: number, box: [number, number, number, number] | null, type: string, series: string, grade: string, material: string, mint: string, diameterMm: number | null, pieces: number | null, area: string, country: string, year: number | string | null, michelNo: string, faceValue: string, motif: string, color: string, condition: string, quantity: number, confidence: number, hint: string, on: boolean, thumb?: string }
+interface Stamp { rotation: number, reverse?: File, reverseUrl?: string, position: number, box: [number, number, number, number] | null, type: string, series: string, grade: string, material: string, mint: string, diameterMm: number | null, pieces: number | null, area: string, country: string, year: string, michelNo: string, faceValue: string, motif: string, color: string, condition: string, quantity: number, confidence: number, hint: string, on: boolean, thumb?: string }
 interface Current { file: File, previewUrl: string, captureId?: string, stamps: Stamp[], status: string, error?: string, durationMs?: number }
 const offline = useOfflineQueue()
 const online = ref(true)
@@ -126,7 +126,7 @@ async function next() {
     if (cur.value?.file !== file) return
     cur.value.captureId = res.capture.id; cur.value.durationMs = res.capture.durationMs; cur.value.error = res.error || undefined
     cur.value.status = res.error ? 'Fehler' : `${res.capture.provider} · ${res.capture.model}`
-    cur.value.stamps = (res.stamps as any[]).map(s => ({ ...s, grade: s.grade || 'none', year: s.year ?? '', condition: prefs.condition !== 'auto' ? prefs.condition : (s.condition === 'unknown' ? 'mnh' : s.condition), quantity: 1, on: s.confidence >= 0.4 }))
+    cur.value.stamps = (res.stamps as any[]).map(s => ({ ...s, grade: s.grade || 'none', year: s.year == null ? '' : String(s.year), condition: prefs.condition !== 'auto' ? prefs.condition : (s.condition === 'unknown' ? 'mnh' : s.condition), quantity: 1, on: s.confidence >= 0.4 }))
     if (!cur.value.stamps.length && !res.error) toast.add({ title: 'Keine Marke erkannt', description: 'Du kannst Marken von Hand ergänzen.', color: 'warning' })
     await nextTick(); drawCrops()
   } catch (e: any) {
@@ -144,7 +144,7 @@ function drawCrops() {
   const ctx = c.getContext('2d')!; ctx.drawImage(img, 0, 0)
   for (const s of cur.value.stamps) {
     if (!s.box || s.thumb) continue
-    const [y1, x1, y2, x2] = s.box.map(v => v / 1000)
+    const [y1, x1, y2, x2] = s.box.map(v => v / 1000) as [number, number, number, number]
     const sw = (x2 - x1) * c.width, sh = (y2 - y1) * c.height
     const t = document.createElement('canvas'); const k = Math.min(1, 240 / Math.max(sw, sh)); t.width = Math.max(1, Math.round(sw * k)); t.height = Math.max(1, Math.round(sh * k))
     t.getContext('2d')!.drawImage(c, x1 * c.width, y1 * c.height, sw, sh, 0, 0, t.width, t.height)

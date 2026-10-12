@@ -100,11 +100,12 @@ type DemoKey = typeof demos[number]['key']
 const active = ref<DemoKey>('ddr-kleinbogen')
 const selected = ref<number | null>(null)
 const demo = computed(() => demos.find(d => d.key === active.value)!)
-const cap = computed(() => DEMO_CAPTURES[active.value])
+type DemoStamp = { position: number, box: readonly number[] | null, type: string, michelNo?: string, [k: string]: any }
+const cap = computed(() => { const c = DEMO_CAPTURES[active.value]; return { ...c, stamps: c.stamps as unknown as readonly DemoStamp[] } })
 
 function boxStyle(box: readonly number[] | null) {
   if (!box) return { display: 'none' }
-  const [y1, x1, y2, x2] = box
+  const [y1 = 0, x1 = 0, y2 = 0, x2 = 0] = box
   return { top: `${y1 / 10}%`, left: `${x1 / 10}%`, height: `${(y2 - y1) / 10}%`, width: `${(x2 - x1) / 10}%` }
 }
 const isCoin = (t: string) => t === 'coin' || t === 'coin_set'

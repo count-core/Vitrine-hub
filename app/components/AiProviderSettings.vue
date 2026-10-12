@@ -103,7 +103,7 @@ const testing = ref(false)
 const testResult = ref<{ ok: boolean, model?: string, ms?: number, error?: string } | null>(null)
 async function test() {
   testing.value = true; testResult.value = null
-  try { testResult.value = await $fetch('/api/ai/test', { method: 'POST', body: { provider: f.provider, model: f.model, apiKey: f.apiKey || undefined, baseUrl: f.baseUrl || undefined } }) }
+  try { testResult.value = await $fetch<any>('/api/ai/test', { method: 'POST', body: { provider: f.provider, model: f.model, apiKey: f.apiKey || undefined, baseUrl: f.baseUrl || undefined } }) }
   catch (e: any) { testResult.value = { ok: false, error: e?.data?.statusMessage || 'Fehler' } }
   finally { testing.value = false }
 }

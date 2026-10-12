@@ -56,8 +56,8 @@ const { data, refresh } = await useFetch<any>('/api/items', { query: { status: '
 const items = computed(() => data.value?.items || [])
 const count = computed(() => items.value.length)
 
-const condItems = CONDITIONS.slice(0, 4).map(c => ({ label: `${c.symbol} ${c.label}`, value: c.value }))
-const typeItems = TYPES.map(t => ({ label: t.label, value: t.value }))
+const condItems = CONDITIONS.slice(0, 4).map(c => ({ label: `${c.symbol} ${c.label}`, value: c.value as string }))
+const typeItems = TYPES.map(t => ({ label: t.label, value: t.value as string }))
 const open = ref(false), saving = ref(false)
 const f = reactive({ type: 'stamp', area: 'Bund', michelNo: '', year: '', series: '', motif: '', condition: 'mnh', wantedMaxPrice: '', publicNote: '' })
 

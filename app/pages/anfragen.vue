@@ -4,7 +4,7 @@
     <p v-if="!data?.rows?.length" class="rounded-2xl bg-white p-8 text-center text-stone-500 dark:bg-stone-900">Noch keine Anfragen. Sie kommen über deine öffentliche Sammlung herein.</p>
     <div v-for="r in data?.rows || []" :key="r.id" class="rounded-2xl bg-white p-4 dark:bg-stone-900" :class="r.readAt ? 'opacity-70' : 'ring-2 ring-orange-400'">
       <div class="flex flex-wrap items-center gap-2 text-sm">
-        <UBadge :color="r.kind === 'have' ? 'success' : r.kind === 'offer' ? 'warning' : 'neutral'" variant="soft">{{ { question: 'Frage', offer: 'Preisvorschlag', have: 'Hat gesuchte Marke' }[r.kind] || r.kind }}</UBadge>
+        <UBadge :color="r.kind === 'have' ? 'success' : r.kind === 'offer' ? 'warning' : 'neutral'" variant="soft">{{ kindLabel[r.kind] || r.kind }}</UBadge>
         <b>{{ r.name || 'Ohne Name' }}</b><a :href="`mailto:${r.email}`" class="underline">{{ r.email }}</a>
         <span class="text-stone-500">{{ new Date(r.createdAt).toLocaleString('de-DE') }}</span>
         <span v-if="r.offerPrice" class="font-semibold">{{ eur(r.offerPrice) }}</span>
@@ -21,6 +21,7 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
 const { eur } = useLabels()
+const kindLabel: Record<string, string> = { question: 'Frage', offer: 'Preisvorschlag', have: 'Hat gesuchte Marke' }
 const { data, refresh } = await useFetch<any>('/api/inquiries')
 async function mark(r: any) { await $fetch(`/api/inquiries/${r.id}`, { method: 'PATCH', body: { read: !r.readAt } }); await refresh() }
 async function remove(r: any) { if (!window.confirm('Anfrage löschen?')) return; await $fetch(`/api/inquiries/${r.id}`, { method: 'DELETE' }); await refresh() }

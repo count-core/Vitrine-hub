@@ -76,7 +76,7 @@ import { formatRanges } from '#shared/utils/ranges'
 
 const emit = defineEmits<{ added: [] }>()
 const toast = useToast()
-const condItems = CONDITIONS.slice(0, 4).map(c => ({ label: `${c.symbol} ${c.label}`, value: c.value }))
+const condItems = CONDITIONS.slice(0, 4).map(c => ({ label: `${c.symbol} ${c.label}`, value: c.value as string }))
 const typeLabel = (t: string) => TYPES.find(x => x.value === t)?.label || t
 
 const maxRun = ref(10)
@@ -113,19 +113,20 @@ async function add() {
 const { data: facets } = await useFetch<any>('/api/items/facets')
 const seriesItems = computed<string[]>(() => (facets.value?.series || []).map((s: any) => s.value ?? s).filter(Boolean))
 const series = ref(''), area = ref('')
-const sug = ref<any>(null), suggesting = ref(false)
+const sug = ref<{ suggestions: any[], [k: string]: any } | null>(null), suggesting = ref(false)
 const sugSel = reactive(new Set<number>())
 function toggleSug(i: number) { sugSel.has(i) ? sugSel.delete(i) : sugSel.add(i) }
 
 async function suggest() {
   if (!series.value && !area.value) { toast.add({ title: 'Serie oder Gebiet wählen', color: 'warning' }); return }
   suggesting.value = true; sug.value = null; sugSel.clear()
-  try { sug.value = await $fetch('/api/wishlist/suggest', { method: 'POST', body: { series: series.value, area: area.value } }) }
+  try { sug.value = await $fetch<any>('/api/wishlist/suggest', { method: 'POST', body: { series: series.value, area: area.value } }) }
   catch (e: any) { toast.add({ title: e?.data?.statusMessage || 'KI-Abfrage fehlgeschlagen', color: 'error' }) }
   finally { suggesting.value = false }
 }
 async function addSuggestions() {
-  const entries = [...sugSel].map(i => sug.value.suggestions[i]).filter(Boolean).map((s: any) => ({ area: area.value || sug.value.area, type: s.type || 'stamp', series: sug.value.series, michelNo: s.michelNo, motif: s.motif, year: s.year, condition: wishCondition.value }))
+  const s0 = sug.value; if (!s0) return
+  const entries = [...sugSel].map(i => s0.suggestions[i]).filter(Boolean).map((s: any) => ({ area: area.value || s0.area, type: s.type || 'stamp', series: s0.series, michelNo: s.michelNo, motif: s.motif, year: s.year, condition: wishCondition.value }))
   adding.value = true
   try {
     const r = await $fetch<{ added: number, skipped: number }>('/api/wishlist/from-gaps', { method: 'POST', body: { entries } })

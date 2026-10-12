@@ -70,7 +70,7 @@ const page = ref(1)
 watch(() => ({ ...f }), () => { page.value = 1 }, { deep: true })
 const clean = (v: string) => v === ALL ? '' : v
 const query = computed(() => ({ q: f.q, area: f.area, condition: clean(f.condition), status: clean(f.status), albumId: clean(f.albumId), sheet: f.sheet, type: f.type, series: f.series, sort: f.sort, page: page.value, limit: 60 }))
-const { data, pending, refresh } = await useFetch('/api/items', { query, watch: [query] })
+const { data, pending, refresh } = await useFetch<{ items: any[], total: number, page: number, limit: number }>('/api/items', { query, watch: [query] })
 const { data: facets, refresh: refreshFacets } = await useFetch('/api/items/facets')
 const condItems = [{ label: 'Alle Erhaltungen', value: ALL }, ...CONDITIONS.map(c => ({ label: `${c.symbol} ${c.label}`, value: c.value }))]
 const statusItems = [{ label: 'Alle Status', value: ALL }, ...STATUSES.map(s => ({ label: s.label, value: s.value }))]
@@ -82,7 +82,7 @@ function reset() { Object.assign(f, { q: '', area: '', type: '', series: '', con
 const selected = reactive(new Set<string>())
 const toggle = (id: string) => selected.has(id) ? selected.delete(id) : selected.add(id)
 const allSelected = computed(() => !!data.value?.items?.length && data.value.items.every((i: any) => selected.has(i.id)))
-function toggleAll(v: boolean) { for (const i of data.value?.items || []) v ? selected.add(i.id) : selected.delete(i.id) }
+function toggleAll(v: boolean | 'indeterminate') { for (const i of data.value?.items || []) v === true ? selected.add(i.id) : selected.delete(i.id) }
 const toast = useToast()
 async function bulk(body: Record<string, unknown>) {
   await $fetch('/api/items/bulk', { method: 'POST', body: { ids: [...selected], ...body } })

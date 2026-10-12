@@ -1,5 +1,6 @@
 import { and, eq, inArray } from 'drizzle-orm'
 import { db, schema } from '../db'
+import type { Role } from './access'
 
 /** Rückwärtskompatibel: liefert die aktive Sammlung (eigene oder per Mitgliedschaft). */
 export async function getOrCreateCollection(userId: string) {
@@ -20,9 +21,9 @@ export async function assertOwnAlbum(patch: Record<string, unknown>, collectionI
   if (!a) throw createError({ statusCode: 400, statusMessage: 'Album ungültig' })
 }
 
-/** Position, auf die der Nutzer Zugriff hat (eigene Sammlung oder Mitgliedschaft). */
-export async function requireOwnedItem(itemId: string, userId: string) {
-  const cids = await accessibleCollectionIds(userId)
+/** Position, auf die der Nutzer mindestens mit der Rolle `min` Zugriff hat (eigene Sammlung oder Mitgliedschaft). */
+export async function requireOwnedItem(itemId: string, userId: string, min: Role = 'viewer') {
+  const cids = await accessibleCollectionIds(userId, min)
   const it = cids.length ? await db.query.item.findFirst({ where: and(eq(schema.item.id, itemId), inArray(schema.item.collectionId, cids)) }) : null
   if (!it) throw createError({ statusCode: 404, statusMessage: 'Position nicht gefunden' })
   return it

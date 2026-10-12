@@ -10,10 +10,10 @@ interface CommitStamp {
 }
 
 export default defineEventHandler(async (event) => {
-  const user = await requireUser(event)
+  const { user } = await requireRole(event, 'editor')
   const c = await getOrCreateCollection(user.id)
   const id = getRouterParam(event, 'id')!
-  const cap = await db.query.capture.findFirst({ where: and(eq(schema.capture.id, id), inArray(schema.capture.collectionId, await accessibleCollectionIds(user.id))) })
+  const cap = await db.query.capture.findFirst({ where: and(eq(schema.capture.id, id), inArray(schema.capture.collectionId, await accessibleCollectionIds(user.id, 'editor'))) })
   if (!cap) throw createError({ statusCode: 404, statusMessage: 'Aufnahme nicht gefunden' })
   const body = await readBody<{ albumNumber?: number, sheet?: number, stamps: CommitStamp[] }>(event)
   if (!body?.stamps?.length) throw createError({ statusCode: 400, statusMessage: 'Keine Marken gewählt' })

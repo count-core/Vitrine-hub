@@ -3,14 +3,14 @@ import { db, schema } from '../../db'
 
 /** KI-Schätzung für bis zu 15 Positionen nacheinander (Rate-Limit des Free Tiers schonen). */
 export default defineEventHandler(async (event) => {
-  const user = await requireUser(event)
+  const { user } = await requireRole(event, 'editor')
   const body = await readBody<{ ids: string[] }>(event)
   const ids = (body?.ids || []).slice(0, 15)
   if (!ids.length) throw createError({ statusCode: 400, statusMessage: 'Keine Positionen gewählt' })
   const { collection } = await resolveCollection(user.id)
   const ai = resolveAiSettings(collection)
   if (!isConfigured(ai)) throw createError({ statusCode: 400, statusMessage: 'KI-Schätzung braucht einen konfigurierten KI-Anbieter (Einstellungen)' })
-  const items = await db.query.item.findMany({ where: and(inArray(schema.item.collectionId, await accessibleCollectionIds(user.id)), inArray(schema.item.id, ids)) })
+  const items = await db.query.item.findMany({ where: and(inArray(schema.item.collectionId, await accessibleCollectionIds(user.id, 'editor')), inArray(schema.item.id, ids)) })
   const results: { id: string, ok: boolean, error?: string }[] = []
   for (const it of items) {
     try {

@@ -2,9 +2,9 @@ import { eq } from 'drizzle-orm'
 import { db, schema } from '../../../db'
 
 export default defineEventHandler(async (event) => {
-  const user = await requireUser(event)
+  const { user } = await requireRole(event, 'editor')
   const id = getRouterParam(event, 'id')!
-  await requireOwnedItem(id, user.id)
+  await requireOwnedItem(id, user.id, 'editor')
   const parts = await readMultipartFormData(event)
   const files = (parts || []).filter(p => p.name === 'file' && p.data?.length)
   if (!files.length) throw createError({ statusCode: 400, statusMessage: 'Keine Datei' })

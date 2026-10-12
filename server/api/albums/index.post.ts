@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const user = await requireUser(event)
+  const { user } = await requireRole(event, 'editor')
   const c = await getOrCreateCollection(user.id)
   const body = await readBody<{ number: number, name?: string }>(event)
   if (!body?.number) throw createError({ statusCode: 400, statusMessage: 'Nummer fehlt' })

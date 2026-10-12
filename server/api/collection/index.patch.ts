@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import { db, schema } from '../../db'
 
 export default defineEventHandler(async (event) => {
-  const user = await requireUser(event)
+  const { user } = await requireRole(event, 'owner')
   const c = await getOrCreateCollection(user.id)
   const b = await readBody<Record<string, unknown>>(event)
   const patch: Record<string, unknown> = {}

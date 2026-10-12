@@ -14,17 +14,18 @@ export async function resolveCollection(userId: string): Promise<{ collection: t
   return { collection: created!, role: 'owner' }
 }
 
-/** IDs aller Sammlungen, auf die der Nutzer Zugriff hat. */
-export async function accessibleCollectionIds(userId: string) {
+const rank: Record<Role, number> = { viewer: 0, editor: 1, owner: 2 }
+
+/** IDs aller Sammlungen, auf die der Nutzer mindestens mit der Rolle `min` Zugriff hat. */
+export async function accessibleCollectionIds(userId: string, min: Role = 'viewer') {
   const own = await db.select({ id: schema.collection.id }).from(schema.collection).where(eq(schema.collection.ownerId, userId))
-  const mem = await db.select({ id: schema.collectionMember.collectionId }).from(schema.collectionMember).where(eq(schema.collectionMember.userId, userId))
-  return [...new Set([...own.map(o => o.id), ...mem.map(m => m.id)])]
+  const mem = min === 'owner' ? [] : await db.select({ id: schema.collectionMember.collectionId, role: schema.collectionMember.role }).from(schema.collectionMember).where(eq(schema.collectionMember.userId, userId))
+  return [...new Set([...own.map(o => o.id), ...mem.filter(m => rank[m.role] >= rank[min]).map(m => m.id)])]
 }
 
 export async function requireRole(event: H3Event, min: Role) {
   const user = await requireUser(event)
   const { collection, role } = await resolveCollection(user.id)
-  const rank = { viewer: 0, editor: 1, owner: 2 }
   if (rank[role] < rank[min]) throw createError({ statusCode: 403, statusMessage: min === 'owner' ? 'Nur der Eigentümer darf das' : 'Nur mit Bearbeiten-Recht möglich' })
   return { user, collection, role }
 }

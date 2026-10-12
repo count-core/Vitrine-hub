@@ -1,7 +1,7 @@
 import { db, schema } from '../../db'
 
 export default defineEventHandler(async (event) => {
-  const user = await requireUser(event)
+  const { user } = await requireRole(event, 'editor')
   const c = await getOrCreateCollection(user.id)
   const parts = await readMultipartFormData(event)
   const file = (parts || []).find(p => p.name === 'file' && p.data?.length)

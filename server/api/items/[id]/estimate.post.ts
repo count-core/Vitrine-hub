@@ -1,9 +1,9 @@
 import { db, schema } from '../../../db'
 
 export default defineEventHandler(async (event) => {
-  const user = await requireUser(event)
+  const { user } = await requireRole(event, 'editor')
   const id = getRouterParam(event, 'id')!
-  const it = await requireOwnedItem(id, user.id)
+  const it = await requireOwnedItem(id, user.id, 'editor')
   const { collection } = await resolveCollection(user.id)
   const ai = resolveAiSettings(collection)
   if (!isConfigured(ai)) throw createError({ statusCode: 400, statusMessage: 'KI-Schätzung braucht einen konfigurierten KI-Anbieter (Einstellungen)' })

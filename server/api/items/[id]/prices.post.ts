@@ -1,9 +1,9 @@
 import { db, schema } from '../../../db'
 
 export default defineEventHandler(async (event) => {
-  const user = await requireUser(event)
+  const { user } = await requireRole(event, 'editor')
   const id = getRouterParam(event, 'id')!
-  await requireOwnedItem(id, user.id)
+  await requireOwnedItem(id, user.id, 'editor')
   const b = await readBody<{ kind?: string, source: string, price: string | number, priceMax?: string | number, condition?: string, observedAt?: string, url?: string, note?: string }>(event)
   const price = Number(String(b?.price ?? '').replace(',', '.'))
   if (!Number.isFinite(price) || price < 0) throw createError({ statusCode: 400, statusMessage: 'Preis fehlt oder ungültig' })

@@ -11,6 +11,11 @@ Alle nennenswerten Änderungen an Vitrine-Hub. Format nach [Keep a Changelog](ht
 - **Habe ich das schon?**: Angebot fotografieren, die App erkennt die Stücke und zeigt je Stück, ob es schon im Bestand ist, auf der Wunschliste steht oder neu wäre. Speichert nichts, neue Stücke lassen sich direkt als Wunsch übernehmen.
 - **Preisradar**: Zielpreis je Wunsch im Vergleich zu beobachteten Preisen und KI-Schätzung, mit Ampel und Suchlinks.
 
+### Sicherheit
+- Rollen werden jetzt bei allen schreibenden Aufrufen serverseitig geprüft. Mitglieder mit „Nur ansehen“ konnten bisher Positionen, Bilder, Alben und Preise ändern oder löschen und die Sichtbarkeit der Sammlung umstellen. Jetzt braucht Ändern das Recht „Bearbeiten“, die Sammlungseinstellungen bleiben dem Eigentümer vorbehalten.
+- Anfragen mit Namen und E-Mail von Interessenten sehen nur noch Mitglieder mit Bearbeiten-Recht.
+- Ein Einladungscode lässt sich auch bei gleichzeitigen Aufrufen nur einmal einlösen.
+
 ### Behoben
 - Positionsrahmen auf dem Gesamtfoto lagen neben dem Bild statt darauf, sobald das Foto schmaler war als sein Container. Betraf Positionsseite, Satzansicht und die Prüfliste beim Erfassen. Die Rahmen liegen jetzt in allen Ansichten exakt auf dem Foto.
 - Bei Münzen und Banknoten stand an mehreren Stellen „Mi" vor der Katalognummer. Münzen zeigen jetzt „J." (Jaeger), Banknoten „R." (Rosenberg).
